@@ -1,0 +1,466 @@
+<?php
+session_start();
+include ("manager/includes/config.php");
+include ("manager/includes/login.php");
+?>
+<!doctype html>
+<html class="no-js" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Bookstore</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700|Roboto+Slab:400,700' rel='stylesheet' type='text/css'>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="http://cdn.jsdelivr.net/jquery.slick/1.5.9/slick.css" />
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.5.9/slick-theme.min.css" />
+  <link rel="stylesheet" href="css/app.css">
+</head>
+
+<body>
+
+  <div class="off-canvas-wrapper">
+    <div class="off-canvas-wrapper-inner" data-off-canvas-wrapper>
+      <div class="off-canvas position-left" id="offCanvas" data-off-canvas>
+          <nav>
+            <ul class="menu vertical">
+              <li><a href="#">Home Links</a></li>
+              <li><a href="#">Home Links</a></li>
+              <li><a href="#">Home Links</a></li>
+              <li><a href="#">Home Links</a></li>
+              <li><a href="#">Home Links</a></li>
+            </ul>
+          </nav>
+      </div>
+      <!-- off-canvas-menu -->
+      <div class="off-canvas-content" data-off-canvas-content>
+        <header id="mainHeader">
+          <div class="logoContainer">
+            <div class="row">
+              <div class="small-12 medium-2 column">
+                <div id="logoWrap">
+                  <a id="logo" href="/" title="Home Page"><img src="img/logo.png" alt="Bookstore Logo"></a>
+                  <div class="mobile-icons show-for-small-only">
+
+                    <a class="mobile-search" data-toggle="loginSection">
+                      <i class="fa fa-search"></i>
+                    </a>
+
+                    <a href="#" class="cart">
+                      <span class="alert badge">6</span>
+                      <i class="fa fa-shopping-basket"></i>
+                    </a>
+
+                    <a href="#" data-toggle="offCanvas" class="show-menu">
+                      <i class="fa fa-navicon"></i>
+                    </a>
+
+                  </div>
+                </div>
+                <!-- logowrap -->
+              </div>
+              <div class="small-12 medium-10 column">
+                <div class="loginSection" id="loginSection" data-toggler=".show">
+                  <form id="search-form" name="search-form" action="">
+                    <input type="search" placeholder="Search Title, Author and more" />
+                    <button type="button" name="search-submit">
+                      <i class="fa fa-search"></i>
+                    </button>
+                  </form>
+
+                 <a href="#" class="cart">
+             <?php
+					if (isset($_SESSION['user'])){
+						$query="SELECT * FROM users WHERE mail = '$_SESSION[user]'";
+						$result= mysqli_query($db_conn, $query) or die("Invalid query");
+						$row = mysqli_fetch_array($result);
+						$queries="SELECT * FROM cart WHERE user_id = '$row[id]'";
+						$res= mysqli_query($db_conn, $queries) or die("Invalid query");
+						$count=mysqli_num_rows($res);
+						?>
+              <span class="alert badge"><?php echo $count; ?></span>
+              <i class="fa fa-shopping-basket"></i>
+              <?php } ?>
+            </a>
+
+            <?php
+			  if (!isset($_SESSION['user'])){
+			?>
+            <a href="#" class="hollow small button user-logIn" data-toggle="login-dropdown">
+              <i class="fa fa-sign-in"></i> Login
+            </a>
+            <div class="dropdown-pane" id="login-dropdown" data-options="closeOnClick: true;" data-dropdown data-auto-focus="false">
+
+              <div class="facebook-login">
+                <a href="#" class="hollow small button expanded"> <i class="fa fa-facebook"></i> Facebook Login</a>
+              </div>
+
+              <span class="or"><strong>OR</strong></span>
+
+              <form name="login-form" action="<?php $_SERVER['PHP_SELF']?>" method="post" data-abide novalidate>
+                      <div class="row">
+                        <div class="small-12 columns">
+                          <label for="login-username">
+                            Email
+                          </label>
+                          <input id="login-username" type="email" name="mail" required pattern="email">
+                          <span class="form-error">
+                            Type Your Email
+                          </span>
+                        </div>
+
+                        <div class="small-12 columns">
+                          <label for="login-password">Password</label>
+                          <input id="login-password" type="password" name="pass" required pattern="password">
+                          <span class="form-error">
+                            Type Your Password
+                          </span>
+                        </div>
+
+                       <div class="groupInputs">
+                    <input type="submit" name="login" value="Login" class="tiny button">
+                    <input type="submit" name="signup" value="Register" class="hollow tiny button">
+                  </div>
+
+                      </div>
+                    </form>
+            </div>
+            <?php
+				}else{
+					$query="SELECT * FROM users where mail='$_SESSION[user]'";
+					$result= mysqli_query($db_conn, $query) or die("Invalid query");
+					$row = mysqli_fetch_array($result);
+			  ?>
+
+             <a href="#" class="user-logged" data-toggle="logout-dropdown">
+                <span><?php echo $row['username'];?></span>
+                <img src="http://placehold.it/40x40" alt="user avatar">
+                <i class="fa fa-angle-down"></i>
+              </a>
+              <div class="dropdown-pane" id="logout-dropdown" data-dropdown data-auto-focus="false" data-options="closeOnClick:true;">
+                <?php include("includes/user_menu.html"); ?>
+              </div> 
+          </div>
+          <!-- loginSection -->
+           <?php } ?>
+            
+                </div>
+              </div>
+            </div>
+            <div class="menuContainer show-for-medium">
+              <div class="row">
+                <?php include("includes/main_nav.html"); ?>
+              </div>
+            </div>
+          </header>
+
+        <div class="row">
+        <?php
+		$id = $_GET['id'];
+		$query="SELECT * FROM books where id=$id";
+		$result= mysqli_query($db_conn, $query) or die("Invalid query");
+		$row = mysqli_fetch_array($result);
+		?>
+          <div class="small-12 column">
+            <nav aria-label="You are here:" role="navigation">
+              <ul class="breadcrumbs">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Books</a></li>
+                <li class="disabled"><?php echo $row['name']; ?></li>
+              </ul>
+            </nav>
+          </div>
+
+          <div class="medium-8 column">
+            <article class="bookReview">
+
+              <!-- book-info-mobile -->
+              <div class="book-info show-for-small-only">
+                <h2><?php echo $row['name']; ?></h2>
+                <div class="author"><strong>By. </strong> <a href="#"><?php echo $row['author']; ?></a></div>
+                <div class="p-stars">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star-o"></i>
+                  <span>(4)</span>
+                </div>
+              </div>
+              <!-- book-info-mobile -->
+
+              <div class="book-cover">
+                <img src="img/books/<?php echo $row['pic']; ?>" width="250" heiht="367" alt="Book Cover">
+              </div>
+
+              <div class="book-info">
+                <h2 class="show-for-medium"><?php echo $row['name']; ?></h2>
+                <div class="author  show-for-medium"><strong>By. </strong> <a href="#"><?php echo $row['author']; ?></a></div>
+                <div class="p-stars show-for-medium">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star-o"></i>
+                  <span>(4)</span>
+                </div>
+                <div class="des">
+                  <h5>Description</h5>
+                  <div class="des-expand">
+                    <p><?php echo $row['description']; ?></p>
+                  </div>
+                  <!-- des-expand -->
+                  <span class="expand-toggle secondary hollow small button">
+                    <i class="fa fa-plus"></i> <strong>Read More</strong>
+                  </span>
+                </div>
+                <!-- des -->
+                <form action="" method="get" accept-charset="utf-8">
+                  <h5>Quantaty</h5>
+                  <div class="p-quantity">
+                    <a class="minus small button">-</a>
+                    <input type="number" name="quantity" value="1" placeholder="">
+                    <a class="add small button">+</a>
+                  </div><!-- p-quantity -->
+
+                  <div class="cta">
+                    <a href="#" class="alert button">
+                      <i class="fa fa-shopping-basket"></i> Buy Now
+                    </a>
+                    <a href="#" class="hollow button">
+                      <i class="fa fa-file-pdf-o"></i> Read PDF
+                    </a>
+                    <a href="#" class="button expanded wishlist" title="wishlist">
+                      <i class="fa fa-heart"></i> add to wishlist
+                    </a>
+                  </div>
+                  <!-- cta -->
+                </form>
+              </div>
+              <!-- bookinfo -->
+            </article><!-- bookReview -->
+
+            <!-- Books You May Love -->
+            <section class="section-style">
+              <h1 class="section-title">
+                  <span>Books You May Like</span>
+              </h1>
+              <div class="row">
+                <div class="small-12 medium-4 column">
+                  <div class="book-item">
+                    <a class="item-bookcover">
+                        <img src="img/cover1.jpg" width="150" height="220" alt="book cover">
+                        <!-- <img src="http://placehold.it/150x220" width="150" height="220" alt="book cover"> -->
+                    </a>
+                    <h1><a href="#">Game Of Throns Song of ice & fire</a></h1>
+                    <span class="by">by:
+                        <strong>James Bond</strong>
+                    </span>
+                    <span class="rate">
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </span>
+                    <a href="#" class="cta-button">
+                      <div class="price">85<small>EGP</small>
+                      </div>
+                      <span class="button">
+                        <i class="fa fa-shopping-basket"></i>
+                      </span>
+                    </a>
+                  </div>
+                </div>
+                <!-- .book-item -->
+                <div class="small-12 medium-4 column">
+                  <div class="book-item">
+                    <a class="item-bookcover">
+                        <img src="img/cover1.jpg" width="150" height="220" alt="book cover">
+                        <!-- <img src="http://placehold.it/150x220" width="150" height="220" alt="book cover"> -->
+                    </a>
+                    <h1><a href="#">Game Of Throns Song of ice & fire</a></h1>
+                    <span class="by">by:
+                        <strong>James Bond</strong>
+                      </span>
+                    <span class="rate">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                      </span>
+                    <a href="#" class="cta-button">
+                      <div class="price">85<small>EGP</small>
+                      </div>
+                      <span class="button">
+                        <i class="fa fa-shopping-basket"></i>
+                      </span>
+                    </a>
+                  </div>
+                </div>
+                <!-- .book-item -->
+                <div class="small-12 medium-4 column">
+                  <div class="book-item">
+                    <a class="item-bookcover">
+                        <img src="img/cover1.jpg" width="150" height="220" alt="book cover">
+                        <!-- <img src="http://placehold.it/150x220" width="150" height="220" alt="book cover"> -->
+                    </a>
+                    <h1><a href="#">Game Of Throns Song of ice & fire</a></h1>
+                    <span class="by">by:
+                        <strong>James Bond</strong>
+                      </span>
+                    <span class="rate">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                      </span>
+                    <a href="#" class="cta-button">
+                      <div class="price">85<small>EGP</small>
+                      </div>
+                      <span class="button">
+                        <i class="fa fa-shopping-basket"></i>
+                      </span>
+                    </a>
+                  </div>
+                </div>
+                <!-- .book-item -->
+              </div>
+              <!-- .row -->
+            </section>
+          </div>
+          <div class="medium-4 column">
+            <aside class="inner-aside">
+              <div class="widget quote">
+                <h5><i class="fa fa-quote-left"></i> Quote of the day</h5>
+                <blockquote>
+                  &ldquo; Every four years, we gain an extra calendar day. But why? Neil deGrasse Tyson explains the science behind the leap year.. &rdquo;
+                  <cite>From <strong>Lord of the rings</strong></cite>
+                </blockquote>
+              </div>
+              <!-- Quote -->
+
+              <div class="widget">
+                <h5><i class="fa fa-book"></i> sponsored book</h5>
+                <div class="book-item">
+                  <span class="item-bookcover">
+                      <a href="#">
+                        <img src="img/cover1.jpg" width="150" height="220" alt="book cover">
+                      </a>
+                  </span>
+                  <h1><a href="#">Game Of Throns Song of ice & fire</a></h1>
+                  <cite>by | <strong>Goerge R.R. Martin</strong></cite>
+                </div>
+              </div>
+              <!-- sponsored book -->
+            </aside>
+          </div>
+        </div>
+
+        <footer class="main-footer">
+          <div class="row">
+            <div class="medium-7 show-for-medium column">
+              <div class="row">
+                <div class="medium-6 column">
+                  <nav class="footer-links">
+                    <h4>About Us</h4>
+                    <ul class="menu vertical">
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                <div class="medium-6 column">
+                  <nav class="footer-links">
+                    <h4>Extras</h4>
+                    <ul class="menu vertical">
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" title="">
+                          <i class="fa fa-angle-right"></i> Careers
+                        </a>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+            <!-- col -->
+            <div class="small-12 medium-5 column">
+              <div class="newsletters">
+                <h4>Don't Miss Out</h4>
+                <p>
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+                <form class="newsletters" action="" method="post" data-abide>
+                  <div class="input-group">
+                    <input required pattern="email" placeholder="Your Email" class="input-group-field" type="email">
+                    <div class="input-group-button">
+                      <input type="submit" class="button" value="Sign Up">
+                    </div>
+                  </div>
+                  <!-- input-group -->
+                </form>
+              </div>
+              <!-- newsletters -->
+            </div>
+            <!-- col -->
+          </div>
+          <!-- row -->
+        </footer>
+        <!-- main-footer -->
+
+        <div class="copyright">
+          <i class="fa fa-copyright "></i>
+          Alef Library All Rights Reserved
+        </div>
+      </div>
+      <!-- data-off-canvas-content -->
+    </div>
+  </div>
+  <!-- off-canvas-wrapper -->
+
+
+
+  <script src="js/vendor.min.js"></script>
+  <script type="text/javascript" src="http://cdn.jsdelivr.net/jquery.slick/1.5.9/slick.min.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>
